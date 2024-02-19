@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login Page</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+  <!-- Add your custom styles here if needed -->
+  <style>
+    body {
+      background-color: #f5f5f5;
+      font-family: 'Martel', serif; /* Используем Martel по умолчанию */
+    }
+    .login-container {
+      max-width: 400px;
+      margin: auto;
+      margin-top: 50px;
+      padding: 20px;
+      border-radius: 8px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .footer {
+      margin-top: 20px;
+      text-align: center;
+      color: #888;
+    }
+    .motd {
+      margin-bottom: 20px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      background-color: #f9f9f9;
+    }
+    .error-message {
+      color: #d9534f;
+      font-size: 0.9rem;
+      margin-top: 10px;
+    }
+    .magic-link,
+    .sign-up {
+      margin-top: 15px;
+    }
+  </style>
+  <!-- Add your font imports here if needed -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Martel:wght@400;700&display=swap"> <!-- Martel -->
+  <!-- Add imports for Martel Sans, Gotam, and Cascadia Code if needed -->
+</head>
+<body>
+
+  <section class="section">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-half login-container">
+          <h1 class="title is-4 has-text-centered">Login</h1>
+
+          <!-- Message of the Day (MOTD) -->
+          <div class="motd">
+            <p><strong>Welcome!</strong> Please enter your credentials to log in.</p>
+            <!-- Additional MOTD content can be added here -->
+          </div>
+
+          <!-- Username and Password Fields -->
+          <div class="field">
+            <label class="label">Username</label>
+            <div class="control">
+              <input class="input" type="text" placeholder="Enter your username">
+            </div>
+          </div>
+          <div class="field">
+            <label class="label">Password</label>
+            <div class="control">
+              <input class="input" type="password" placeholder="Enter your password">
+            </div>
+          </div>
+
+          <!-- Error Message -->
+          <p class="error-message">Invalid username or password. Please try again.</p>
+
+          <!-- Login Button -->
+          <div class="field">
+            <div class="control">
+              <button class="button is-primary is-fullwidth">Login</button>
+            </div>
+          </div>
+
+          <!-- Login with Magic Link -->
+          <div class="magic-link has-text-centered">
+            <a href="#">Login with Magic Link</a>
+          </div>
+
+          <!-- Sign Up -->
+          <div class="sign-up has-text-centered">
+            <p>Don't have an account? <a href="#">Sign Up</a></p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="content">
+      <p>&copy; 2024 Your Company. All rights reserved.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
+

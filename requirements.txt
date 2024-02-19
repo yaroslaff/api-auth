@@ -3,3 +3,6 @@ python-multipart
 python-jose[cryptography]
 passlib[bcrypt]
 uvicorn
+alembic
+python-dotenv
+
