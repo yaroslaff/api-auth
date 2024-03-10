@@ -22,6 +22,8 @@ from .templates import template_env
 from .startup import startup
 from .session import get_current_user_session
 
+__version__ = '0.0.1'
+
 # to get a string like this run:
 # openssl rand -hex 32
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
