@@ -2,8 +2,11 @@ from datetime import datetime, timedelta, timezone
 from typing import Annotated
 import logging
 
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+
 from jose import JWTError, jwt
 from pydantic import BaseModel
 
@@ -11,9 +14,13 @@ from fastapi import APIRouter
 
 from sqlalchemy.orm import Session
 
-
 from . import schemas, crud
 from .db import get_db
+from .settings import settings
+from .verification import send_verification
+from .templates import template_env
+from .startup import startup
+from .session import get_current_user_session
 
 # to get a string like this run:
 # openssl rand -hex 32
@@ -58,6 +65,11 @@ class UserInDB(User):
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 api_auth = APIRouter()
+# api_auth = FastAPI()
+
+startup(api_auth)
+
+# api_auth.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 #def get_user(db, username: str):
@@ -77,7 +89,9 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+
+
+async def get_current_user_jwt(token: Annotated[str, Depends(oauth2_scheme)]):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -97,15 +111,56 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     return user
 
 
+async def get_current_user(request: Request, db: Session = Depends(get_db)):
+    if settings.auth_transport == "session":
+        print("call get current user session")
+        return get_current_user_session(request, db)
+
 
 async def get_current_active_user(
-    current_user: Annotated[User, Depends(get_current_user)]
+    current_user: Annotated[User, Depends(get_current_user)],
 ):
-    if current_user.disabled:
-        raise HTTPException(status_code=400, detail="Inactive user")
+    print("curuser:", current_user)
+    #if current_user.disabled:
+    #    raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
+
 logged_in_user = Annotated[User, Depends(get_current_active_user)]
+
+@api_auth.get('/login')
+def login_html():
+    tpl = template_env.get_template('login.html')
+
+    ctx = {
+        'motd2': 'motd motd motd motd motd motd',
+        'error2': 'some problem'
+    }
+
+    html = tpl.render(ctx)
+    return HTMLResponse(html)
+
+
+@api_auth.post('/login')
+def login_html(
+            request: Request, 
+            form: Annotated[OAuth2PasswordRequestForm, Depends()],
+            db: Session = Depends(get_db),
+            response_class=HTMLResponse):
+    
+    # here is POST
+    user = crud.get_auth_user(db, form.username, form.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # authenticate
+    if settings.auth_transport == "session":
+        request.session['user'] = user.uuid        
+
 
 
 @api_auth.post("/token")
@@ -129,9 +184,22 @@ async def login_for_access_token(
 
 
 @api_auth.post("/users/", response_model=schemas.User)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = crud.get_user_by_email(db, email=user.email)
-    if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    return crud.create_user(db=db, user=user)
+def create_user(request: Request, user: schemas.UserCreate, db: Session = Depends(get_db)):
+    
+    if settings.username_is_email:
+        db_user = crud.get_user_by_email(db, email=user.email)
+    else:
+        db_user = crud.get_user_by_username(db, username=user.username)
 
+    
+    print("pre-registered user:", db_user)
+
+    if db_user:
+        raise HTTPException(status_code=400, detail="User already registered")
+    user = crud.create_user(db=db, user=user)
+    print("created user", user)
+
+    if settings.email_verification:
+        send_verification(request=request, db=db, user=user)
+    
+    return user

@@ -53,40 +53,49 @@
         <div class="column is-half login-container">
           <h1 class="title is-4 has-text-centered">Login</h1>
 
+
+          {% if motd %}
           <!-- Message of the Day (MOTD) -->
           <div class="motd">
-            <p><strong>Welcome!</strong> Please enter your credentials to log in.</p>
-            <!-- Additional MOTD content can be added here -->
+            <p>{{motd}}</p>
           </div>
+          {% endif %}
 
-          <!-- Username and Password Fields -->
-          <div class="field">
-            <label class="label">Username</label>
-            <div class="control">
-              <input class="input" type="text" placeholder="Enter your username">
+
+          <form method="POST">
+            <!-- Username and Password Fields -->
+            <div class="field">
+              <label class="label">Username</label>
+              <div class="control">
+                <input class="input" type="text" placeholder="Enter your username">
+              </div>
             </div>
-          </div>
-          <div class="field">
-            <label class="label">Password</label>
-            <div class="control">
-              <input class="input" type="password" placeholder="Enter your password">
+            <div class="field">
+              <label class="label">Password</label>
+              <div class="control">
+                <input class="input" type="password" placeholder="Enter your password">
+              </div>
             </div>
-          </div>
 
-          <!-- Error Message -->
-          <p class="error-message">Invalid username or password. Please try again.</p>
+            {% if error %}
+            <!-- Error Message -->
+            <p class="error-message">{{error}}</p>
+            {% endif %}
 
-          <!-- Login Button -->
-          <div class="field">
-            <div class="control">
-              <button class="button is-primary is-fullwidth">Login</button>
+            <!-- Login Button -->
+            <div class="field">
+              <div class="control">
+                <button class="button is-primary is-fullwidth">Login</button>
+              </div>
             </div>
-          </div>
+          </form>
 
+          {% if magic_link %}
           <!-- Login with Magic Link -->
           <div class="magic-link has-text-centered">
             <a href="#">Login with Magic Link</a>
           </div>
+          {% endif %}
 
           <!-- Sign Up -->
           <div class="sign-up has-text-centered">
@@ -101,7 +110,7 @@
   <!-- Footer -->
   <footer class="footer">
     <div class="content">
-      <p>&copy; 2024 Your Company. All rights reserved.</p>
+      <p>github.com/yaroslaff</p>
     </div>
   </footer>
 

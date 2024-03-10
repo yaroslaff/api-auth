@@ -1,3 +1,4 @@
+pydantic[email]
 fastapi
 python-multipart
 python-jose[cryptography]
@@ -5,4 +6,6 @@ passlib[bcrypt]
 uvicorn
 alembic
 python-dotenv
-
+jinja2
+pydantic-settings
+itsdangerous
