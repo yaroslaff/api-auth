@@ -8,19 +8,19 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from jose import JWTError, jwt
-from pydantic import BaseModel
 
-from fastapi import APIRouter
 
 from sqlalchemy.orm import Session
 
 from . import schemas, crud
+from .router import auth_router
 from .db import get_db
 from .settings import settings
 from .verification import send_verification
 from .templates import template_env
 from .startup import startup
 from .session import get_current_user_session
+from . import views
 
 __version__ = '0.0.1'
 
@@ -44,32 +44,9 @@ fake_users_db = {
 # suppress AttributeError: module 'bcrypt' has no attribute '__about__'
 logging.getLogger('passlib').setLevel(logging.ERROR)
 
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-
-class TokenData(BaseModel):
-    username: str | None = None
-
-
-class User(BaseModel):
-    username: str
-    email: str | None = None
-    full_name: str | None = None
-    disabled: bool | None = None
-
-
-class UserInDB(User):
-    hashed_password: str
-
-
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-api_auth = APIRouter()
-# api_auth = FastAPI()
-
-startup(api_auth)
+startup(auth_router)
 
 # api_auth.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -120,7 +97,7 @@ async def get_current_user(request: Request, db: Session = Depends(get_db)):
 
 
 async def get_current_active_user(
-    current_user: Annotated[User, Depends(get_current_user)],
+    current_user: Annotated[views.User, Depends(get_current_user)],
 ):
     print("curuser:", current_user)
     #if current_user.disabled:
@@ -128,80 +105,4 @@ async def get_current_active_user(
     return current_user
 
 
-logged_in_user = Annotated[User, Depends(get_current_active_user)]
-
-@api_auth.get('/login')
-def login_html():
-    tpl = template_env.get_template('login.html')
-
-    ctx = {
-        'motd2': 'motd motd motd motd motd motd',
-        'error2': 'some problem'
-    }
-
-    html = tpl.render(ctx)
-    return HTMLResponse(html)
-
-
-@api_auth.post('/login')
-def login_html(
-            request: Request, 
-            form: Annotated[OAuth2PasswordRequestForm, Depends()],
-            db: Session = Depends(get_db),
-            response_class=HTMLResponse):
-    
-    # here is POST
-    user = crud.get_auth_user(db, form.username, form.password)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    # authenticate
-    if settings.auth_transport == "session":
-        request.session['user'] = user.uuid        
-
-
-
-@api_auth.post("/token")
-async def login_for_access_token(
-    form: Annotated[OAuth2PasswordRequestForm, Depends()],
-    db: Session = Depends(get_db)
-) -> Token:
-    
-    user = crud.get_auth_user(db, form.username, form.password)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user.uuid}, expires_delta=access_token_expires
-    )
-    return Token(access_token=access_token, token_type="bearer")
-
-
-@api_auth.post("/users/", response_model=schemas.User)
-def create_user(request: Request, user: schemas.UserCreate, db: Session = Depends(get_db)):
-    
-    if settings.username_is_email:
-        db_user = crud.get_user_by_email(db, email=user.email)
-    else:
-        db_user = crud.get_user_by_username(db, username=user.username)
-
-    
-    print("pre-registered user:", db_user)
-
-    if db_user:
-        raise HTTPException(status_code=400, detail="User already registered")
-    user = crud.create_user(db=db, user=user)
-    print("created user", user)
-
-    if settings.email_verification:
-        send_verification(request=request, db=db, user=user)
-    
-    return user
+logged_in_user = Annotated[views.User, Depends(get_current_active_user)]

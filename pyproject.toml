@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "apiauth"
+name = "fastapi-simple-auth"
 dynamic = ["version"]
-description = 'fastapi simple auth'
+description = 'FastAPI simple authentication'
 readme = "README.md"
 requires-python = ">=3.7"
 license = "MIT"
@@ -24,18 +24,32 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = []
+
+dependencies = [
+  'pydantic[email]',
+  'fastapi',
+  'python-multipart',
+  'python-jose[cryptography]',
+  'passlib[bcrypt]',
+  'uvicorn',
+  'alembic',
+  'python-dotenv',
+  'jinja2',
+  'pydantic-settings',
+  'itsdangerous'
+]
+
 
 [project.urls]
-Documentation = "https://github.com/yaroslaff/api-auth#readme"
-Issues = "https://github.com/yaroslaff/api-auth/issues"
-Source = "https://github.com/yaroslaff/api-auth"
+Documentation = "https://github.com/yaroslaff/fastapi-simple-auth#readme"
+Issues = "https://github.com/yaroslaff/fastapi-simple-auth/issues"
+Source = "https://github.com/yaroslaff/fastapi-simple-auth"
 
 [tool.hatch.version]
-path = "auth/__init__.py"
+path = "fastapi_simple_auth/__init__.py"
 
 [tool.hatch.build.targets.wheel]
-packages = ["auth"]
+packages = ["fastapi_simple_auth"]
 
 [tool.hatch.envs.default]
 dependencies = [

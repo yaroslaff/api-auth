@@ -22,6 +22,7 @@ def get_user_by_uuid(db: Session, uuid: str):
     return db.query(models.User).filter(models.User.uuid == uuid).first()
 
 def get_user_by_email(db: Session, email: str):
+    print("GET BY EMAIL", email)
     return db.query(models.User).filter(models.User.email == email).first()
 
 def get_user_by_username(db: Session, username: str):
@@ -51,11 +52,11 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
 def create_user(db: Session, user: schemas.UserCreate):
     hashed_password = get_password_hash(user.password)
     if settings.username_is_email:
-        username = user.email
+        email = user.username
     else:
-        username = user.username
+        email = None
 
-    db_user = models.User(email=user.email, username=username, password=hashed_password)
+    db_user = models.User(username=user.username, email=email, password=hashed_password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)

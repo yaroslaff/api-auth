@@ -40,6 +40,11 @@
     .sign-up {
       margin-top: 15px;
     }
+
+    .svg-container {
+        display: inline-block; /* Сделать контейнер строчным блоком */
+        height: 1em; /* Установить высоту, соответствующую высоте текста */
+    }
   </style>
   <!-- Add your font imports here if needed -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Martel:wght@400;700&display=swap"> <!-- Martel -->
@@ -99,7 +104,7 @@
 
           <!-- Sign Up -->
           <div class="sign-up has-text-centered">
-            <p>Don't have an account? <a href="#">Sign Up</a></p>
+            <p>Don't have an account? <a href="{{ rq.url_for('register_html') }}">Sign Up</a></p>
           </div>
 
         </div>
@@ -109,8 +114,9 @@
 
   <!-- Footer -->
   <footer class="footer">
-    <div class="content">
-      <p>github.com/yaroslaff</p>
+    <div class="svg-container">
+      <p>
+        Powered by <a href="https://github.com/yaroslaff/fastapi-simple-auth">fastapi-simple-auth</a></p>
     </div>
   </footer>
 

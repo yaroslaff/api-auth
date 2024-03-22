@@ -4,15 +4,16 @@ from fastapi.staticfiles import StaticFiles
 from typing import Annotated
 from starlette.middleware.sessions import SessionMiddleware
 
-from auth import api_auth, logged_in_user, User
+from fastapi_simple_auth import auth_router, logged_in_user
+from fastapi_simple_auth.views import User
 
 
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key='ChangeMe', max_age=None)
 
-app.include_router(api_auth, prefix="/auth")
+app.include_router(auth_router, prefix="/auth")
 
-app.mount("/static", StaticFiles(directory="static", packages=['apiauth']), name="static")
+app.mount("/static", StaticFiles(packages=['fastapi_simple_auth']), name="static")
 
 # app.mount('/auth', api_auth)
 
