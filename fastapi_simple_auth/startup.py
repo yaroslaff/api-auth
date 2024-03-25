@@ -4,12 +4,11 @@ from .session import session_startup
 from fastapi import FastAPI
 
 
-def startup(app: FastAPI):
+def startup():
     """ initialize auth and test settings """
-    print(settings)
+    # print(settings)
 
     code = generate_code()
-    print("TEST generate code:", code)
 
     assert(settings.auth_transport in ['session', 'jwt'])
 

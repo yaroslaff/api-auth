@@ -9,6 +9,7 @@ from fastapi.staticfiles import StaticFiles
 
 from jose import JWTError, jwt
 
+from starlette.middleware.sessions import SessionMiddleware
 
 from sqlalchemy.orm import Session
 
@@ -30,23 +31,14 @@ SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-fake_users_db = {
-    "johndoe": {
-        "username": "johndoe",
-        "full_name": "John Doe",
-        "email": "johndoe@example.com",
-        "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
-        "disabled": False,
-    }
-}
-
 
 # suppress AttributeError: module 'bcrypt' has no attribute '__about__'
 logging.getLogger('passlib').setLevel(logging.ERROR)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-startup(auth_router)
+# startup(auth_router)
+startup()
 
 # api_auth.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -55,6 +47,18 @@ startup(auth_router)
 #    if username in db:
 #        user_dict = db[username]
 #        return UserInDB(**user_dict)
+
+
+
+class SimpleAuth():
+    def __init__(self, app: FastAPI):
+        self.app = app
+        self.register()
+
+    def register(self):
+        self.app.add_middleware(SessionMiddleware, secret_key='ChangeMe', max_age=None)
+        self.app.include_router(auth_router, prefix="/auth")
+        self.app.mount("/static", StaticFiles(packages=['fastapi_simple_auth']), name="static")
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
@@ -90,19 +94,25 @@ async def get_current_user_jwt(token: Annotated[str, Depends(oauth2_scheme)]):
     return user
 
 
-async def get_current_user(request: Request, db: Session = Depends(get_db)):
+
+async def get_current_user(request: Request, db: Session = Depends(get_db)): 
     if settings.auth_transport == "session":
-        print("call get current user session")
         return get_current_user_session(request, db)
-
-
+    
 async def get_current_active_user(
-    current_user: Annotated[views.User, Depends(get_current_user)],
+        rq: Request,
+        user: Annotated[views.User, Depends(get_current_user)],
 ):
-    print("curuser:", current_user)
-    #if current_user.disabled:
-    #    raise HTTPException(status_code=400, detail="Inactive user")
-    return current_user
+    
+    if user is None:
+        if settings.notauth_login:
+            raise HTTPException(status_code=302, detail="Not authorized", 
+                            headers = {"Location": str(rq.url_for('login_html'))} )
+        else:
+            raise HTTPException(status_code=403)
+
+
+    return user
 
 
 logged_in_user = Annotated[views.User, Depends(get_current_active_user)]

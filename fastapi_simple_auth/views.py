@@ -3,7 +3,7 @@ from typing import Annotated
 from pydantic import BaseModel
 
 from fastapi import Request, Depends, HTTPException, status
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 from sqlalchemy.orm import Session
@@ -36,6 +36,12 @@ class UserInDB(User):
     hashed_password: str
 
 
+@auth_router.get('/settings')
+def settings_view(request: Request):
+    s = {
+        'username_is_email': settings.username_is_email
+    }
+    return s
 
 @auth_router.get('/register')
 def register_html(request: Request, response_class=HTMLResponse):
@@ -67,15 +73,23 @@ def login_html(request: Request, response_class=HTMLResponse):
     return HTMLResponse(html)
 
 
+@auth_router.post('/logout')
+def logout(request: Request):
+    return RedirectResponse(settings.afterlogout_url)
+
+
+
 
 
 @auth_router.post('/login')
 def login_html(
-            request: Request, 
+            rq: Request, 
             form: Annotated[OAuth2PasswordRequestForm, Depends()],
             db: Session = Depends(get_db),
             response_class=HTMLResponse):
-    
+
+    tpl = template_env.get_template('afterlogin.html')
+
     # here is POST
     user = crud.get_auth_user(db, form.username, form.password)
     if not user:
@@ -87,7 +101,18 @@ def login_html(
 
     # authenticate
     if settings.auth_transport == "session":
-        request.session['user'] = user.uuid        
+        rq.session['user'] = user.uuid        
+
+    print("login, redirect to:", settings.afterlogin_url)
+
+
+    ctx = {
+        'rq': rq,
+        'settings': settings,
+    }
+
+    html = tpl.render(ctx)
+    return HTMLResponse(html)
 
 
 

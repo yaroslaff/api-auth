@@ -21,18 +21,17 @@ def get_user(db: Session, user_id: int):
 def get_user_by_uuid(db: Session, uuid: str):
     return db.query(models.User).filter(models.User.uuid == uuid).first()
 
-def get_user_by_email(db: Session, email: str):
-    print("GET BY EMAIL", email)
+def UNUSED_get_user_by_email(db: Session, email: str):
     return db.query(models.User).filter(models.User.email == email).first()
 
 def get_user_by_username(db: Session, username: str):
     return db.query(models.User).filter(models.User.username == username).first()
 
 def get_user_by_login(db: Session, login: str):
-    if settings.username_is_email:
-        return get_user_by_email(db=db, email=login)
-    else:
-        return get_user_by_username(db=db, username=login)
+    #if settings.username_is_email:
+    #    return get_user_by_email(db=db, email=login)
+    #else:
+    return get_user_by_username(db=db, username=login)
 
 
 def get_auth_user(db: Session, login: str, password: str):

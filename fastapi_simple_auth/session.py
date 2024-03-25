@@ -5,15 +5,13 @@ from .crud import get_user_by_uuid
 from sqlalchemy.orm import Session
 
 def session_startup(app: FastAPI):
-    print("Add session middleware to", app)
     app.add_middleware(SessionMiddleware, secret_key=settings.secret_key, max_age=None)
 
 def get_current_user_session(request: Request, db: Session):
-    print("get_current_user_session")
-    uuid = request.session['user']
-    print("UUID:", uuid)
+    try:
+        uuid = request.session['user']
+    except KeyError:
+        return None
     
-    print("get user from db")
     user = get_user_by_uuid(db, uuid)
-    print("user:", user)
     return user

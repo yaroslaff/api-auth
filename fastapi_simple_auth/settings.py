@@ -1,5 +1,6 @@
 from functools import lru_cache
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from typing import Optional
 
 class Settings(BaseSettings):
     db_url: str = ""
@@ -26,6 +27,11 @@ class Settings(BaseSettings):
     mail_starttls: bool = False
 
     auth_transport: str = "session"
+
+    afterlogin_url: str = "/"
+    afterlogout_url: str = "login"
+    notauth_login: bool = False
+
 
     model_config = SettingsConfigDict(env_file=".env", extra='ignore')
 
