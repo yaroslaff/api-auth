@@ -28,9 +28,16 @@ class Settings(BaseSettings):
 
     auth_transport: str = "session"
 
+    cron_interval: int = 300
+
     afterlogin_url: str = "/"
     afterlogout_url: str = "login"
-    notauth_login: bool = False
+    
+    # redirect to login if not authenticated
+    notauth_login: bool = True
+
+    # authenticate automatically after signup
+    signin_after_signup: bool = True
 
 
     model_config = SettingsConfigDict(env_file=".env", extra='ignore')

@@ -4,7 +4,9 @@ const modal = document.getElementById('myModal');
 const modal_p = document.getElementById('myModal-p')
 const modal_btn = document.getElementById('myModal-btn')
 
-var settings
+const settings = JSON.parse(sessionStorage.getItem("simpleAuthSettings"));
+
+
 
 function redirect_to_login(){
     window.location.replace("login");
@@ -20,7 +22,6 @@ function open_modal(msg, btn_classes = null, btn_title = null, btn_onclick=null)
     modal_btn.classList.remove('is-success');
 
     if(btn_classes){
-        // modal_btn.classList.add(...btn_classes)
         modal_btn.classList.add(...btn_classes)
     }
 
@@ -30,18 +31,18 @@ function open_modal(msg, btn_classes = null, btn_title = null, btn_onclick=null)
 
     if(btn_onclick){
         modal_btn.onclick = btn_onclick;
-        console.log(modal_btn)
+        // console.log(modal_btn)
     }
 
     modal.classList.add('is-active');
 }
 
 function open_modal_close(msg){
-    open_modal(msg, btn_classes = ['is-warning'], btn_title = 'Close');
+    open_modal(msg, ['is-warning'], 'Close');
 }
 
 function open_modal_ok(msg, onclick = null){
-    open_modal(msg, btn_classes = ['is-success'], btn_title = 'OK', btn_onclick=onclick);
+    open_modal(msg, ['is-success'], 'OK', onclick);
 }
 
 const validateEmail = (email) => {
@@ -52,15 +53,109 @@ const validateEmail = (email) => {
       );
   };
 
-function reg_btn_onclick(){
-    var username_el = document.getElementById('username') 
+function verify_btn_onclick(){
+
+    var code = document.getElementById('code').value;
+
+    const payload = {
+        'code': code,
+    }
+
+    /* all checks passed */
+    fetch(window.location.href, {
+        method: "POST",    
+        headers: {
+            "Content-Type": "application/json",
+          },
+        body: JSON.stringify(payload)
+    })
+    .then(async r => {
+        switch(r.status){
+            case 200:
+                var result = await r.json();
+                open_modal_ok("Login successful", function() { window.location.replace(result['url']); } );
+                break;
+            case 400:
+                open_modal_close(await r.text());
+                break;
+            default:
+                open_modal_close("System error (try reloading page): " + await r.text());
+                break;
+        }
+    })
+}
+
+  function verify_send_btn_onclick(){
+    alert("verify send again");
+  }
+
+
+  function login_btn_onclick(){
+    var username_el = document.getElementById('username')
     var username = username_el.value
     var pass1 = document.getElementById('password').value
-    var pass2 = document.getElementById('password2').value
+    
+    var response;
+
+    if(! username){
+        open_modal_close("Username must not be empty");
+        return
+    }
+
+    if(! pass1){
+        open_modal_close("Password must not be empty");
+        return
+    }
+
+    const user_el = document.getElementById('username')
+    const pass_el = document.getElementById('password')
+
+    const formData = new FormData();
+    formData.append("username", user_el.value);
+    formData.append("password", pass_el.value);
+
+
+    const payload = {
+        'username': username,
+        'password': pass1
+    }
+
+    /* all checks passed */
+    fetch('/auth/login', {
+        method: "POST",    
+        body: formData,
+        // redirect: 'manual'
+    })
+    .then(async r => {
+        console.log(r);
+
+        switch(r.status){
+            case 200:
+                var result = await r.json();
+                window.location.replace(result['url']);
+                break;
+            case 401:
+                var result = await r.json();
+                open_modal_close(result.detail);
+                pass_el.value = "";
+                break;
+            default:
+                open_modal_close("System error (try reloading page): " + await r.text());
+                break;
+        }
+    })
+    .catch(e => console.log("MYERROR", e))
+}
+  
+
+function reg_btn_onclick(){
+    const username_el = document.getElementById('username') 
+    const username = username_el.value
+    const pass1 = document.getElementById('password').value
+    const pass2 = document.getElementById('password2').value
 
     var response;
 
-    console.log(settings);
 
     if(! username){
         open_modal_close("Username must not be empty");
@@ -81,7 +176,7 @@ function reg_btn_onclick(){
         return
     }
 
-    payload = {
+    const payload = {
         'username': username,
         'password': pass1
     }
@@ -104,11 +199,15 @@ function reg_btn_onclick(){
             var text = await response.text() 
             open_modal_close(text)
         }else{
-            open_modal_ok("Registered! Please login now. :-)", redirect_to_login)
+            if(r.status == 'OK'){
+                console.log("redirect to", r.redirect);
+                window.location = r.redirect;
+            }else{
+                console.log("status not OK:", r)
+            }
         }
     })
     .catch(e => console.log("ERROR", e))
-
 }
 
 function init_page(){
@@ -122,12 +221,18 @@ function init_page(){
     });
 
     /* register button */
-    reg_btn = document.getElementById('fastapi-simple-auth-register-btn');
+    var reg_btn = document.getElementById('fastapi-simple-auth-register-btn');
     if(reg_btn) reg_btn.onclick = reg_btn_onclick;
- 
-    fetch('settings')
-    .then(r => r.json())
-    .then(r => settings = r)
+
+    var login_btn = document.getElementById('fastapi-simple-auth-login-btn');
+    if(login_btn) login_btn.onclick = login_btn_onclick;
+
+    var verify_btn = document.getElementById('fastapi-simple-auth-verify-btn');
+    if(verify_btn) verify_btn.onclick = verify_btn_onclick;
+
+    var verify_send_btn = document.getElementById('fastapi-simple-auth-verify-send-btn');
+    if(verify_send_btn) verify_send_btn.onclick = verify_send_btn_onclick;
+
 
 }
 

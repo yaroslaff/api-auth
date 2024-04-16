@@ -28,22 +28,27 @@ def generate_code():
     return code
 
 
-def send_verification(request: Request, db: Session, user: User):
+def create_code_record(db: Session, user: User, purpose: str, seconds=int) -> Code:
     code_value = generate_code()
-    print("verification code:", code_value)
-
-    expires = datetime.datetime.now() + datetime.timedelta(seconds=settings.code_lifetime)
-    print("exp:", expires)
-
-    code_record = Code(code=code_value, purpose="verification", expires=expires)
+    expires = datetime.datetime.now() + datetime.timedelta(seconds=seconds)
+    
+    print("create_code_record code:", code_value)
+    code_record = Code(
+        code=code_value, 
+        user=user,
+        purpose=purpose, 
+        expires=expires)
     db.add(code_record)
     db.commit()
+    return code_record
 
+def get_code_record(db: Session, user: User, purpose: str):
+    return db.query(Code).filter(Code.user == user, Code.purpose == purpose).first()
 
-    tpl = template_env.get_template('confirm-email.html')
-
-    html = tpl.render(code = code_value, title = settings.app_title, email = user.email)
-    
-    print("HTML:", html)
-    send_mail(user.email, subject=f"Registration on {settings.app_title}", html=html)
+def send_verification(request: Request, db: Session, user: User):
+    email = user.username
+    cr = create_code_record(db=db, user=user, purpose='signup', seconds=settings.code_lifetime)
+    tpl = template_env.get_template('email/confirm-email.html')
+    html = tpl.render(code = cr.code, title = settings.app_title, email = email)    
+    send_mail(email, subject=f"Registration on {settings.app_title}", html=html)
     

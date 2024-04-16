@@ -13,7 +13,6 @@ def verify_password(plain_password, hashed_password):
 def get_password_hash(password):
     return pwd_context.hash(password)
 
-
 def get_user(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
 
@@ -21,21 +20,12 @@ def get_user(db: Session, user_id: int):
 def get_user_by_uuid(db: Session, uuid: str):
     return db.query(models.User).filter(models.User.uuid == uuid).first()
 
-def UNUSED_get_user_by_email(db: Session, email: str):
-    return db.query(models.User).filter(models.User.email == email).first()
-
 def get_user_by_username(db: Session, username: str):
     return db.query(models.User).filter(models.User.username == username).first()
 
-def get_user_by_login(db: Session, login: str):
-    #if settings.username_is_email:
-    #    return get_user_by_email(db=db, email=login)
-    #else:
-    return get_user_by_username(db=db, username=login)
-
 
 def get_auth_user(db: Session, login: str, password: str):
-    user = get_user_by_login(db, login)
+    user = get_user_by_username(db, login)
     if not user:
         return False
     
@@ -50,12 +40,8 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
 
 def create_user(db: Session, user: schemas.UserCreate):
     hashed_password = get_password_hash(user.password)
-    if settings.username_is_email:
-        email = user.username
-    else:
-        email = None
 
-    db_user = models.User(username=user.username, email=email, password=hashed_password)
+    db_user = models.User(username=user.username, password=hashed_password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)

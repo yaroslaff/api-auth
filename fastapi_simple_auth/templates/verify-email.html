@@ -1,20 +1,26 @@
 {% extends "base.html" %}
-{% block title %}Login :: {{settings.app_title}}{% endblock %}
-{% block header %}Login{% endblock %}
+{% block title %}Verify email :: {{settings.app_title}}{% endblock %}
+{% block header %}Verify email{% endblock %}
 
 {% block content %}
 
+{% if message%}
+  <div class="message">
+    {{message}}
+  </div>
+{% endif %}
+
   <!-- Username and Password Fields -->
   <div class="field">
-    <label class="label">Username</label>
+    <label class="label">Email</label>
     <div class="control">
-      <input class="input" id="username" type="text" placeholder="Enter your username">
+      <input class="input" id="email" type="text" placeholder="me@example.com" value="{{email}}">
     </div>
   </div>
   <div class="field">
-    <label class="label">Password</label>
+    <label class="label">Code</label>
     <div class="control">
-      <input class="input" id="password" type="password" placeholder="Enter your password">
+      <input class="input" id="code" type="text" placeholder="Enter CODE from email message">
     </div>
   </div>
 
@@ -26,7 +32,8 @@
   <!-- Login Button -->
   <div class="field">
     <div class="control">
-      <button id="fastapi-simple-auth-login-btn" class="button is-primary is-fullwidth">Login</button>
+      <button id="fastapi-simple-auth-verify-btn" class="button is-primary is-fullwidth">Verify</button>
+      <button id="fastapi-simple-auth-verify-send-btn" class="button is-primary is-fullwidth">Send again</button>
     </div>
   </div>
 

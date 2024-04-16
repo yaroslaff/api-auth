@@ -7,7 +7,7 @@ app = FastAPI()
 
 simpleauth = SimpleAuth(app)
 
-@app.get("/protected", response_model=User)
+@app.get("/", response_model=User)
 async def read_users_me(
     # user: logged_in_user
     user: logged_in_user

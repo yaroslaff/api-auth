@@ -1,8 +1,8 @@
 """initial
 
-Revision ID: 735d602f5c5d
+Revision ID: fdb82762d6b5
 Revises: 
-Create Date: 2024-03-10 20:23:58.952806
+Create Date: 2024-04-08 19:18:36.609365
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '735d602f5c5d'
+revision: str = 'fdb82762d6b5'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -23,7 +23,6 @@ def upgrade() -> None:
     op.create_table('users',
     sa.Column('uuid', sa.String(length=36), nullable=False),
     sa.Column('username', sa.String(), nullable=True),
-    sa.Column('email', sa.String(), nullable=True),
     sa.Column('password', sa.String(), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=True),
     sa.Column('created', sa.DateTime(), nullable=True),
@@ -36,7 +35,6 @@ def upgrade() -> None:
     sa.UniqueConstraint('uuid')
     )
     with op.batch_alter_table('users', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_users_email'), ['email'], unique=True)
         batch_op.create_index(batch_op.f('ix_users_username'), ['username'], unique=True)
 
     op.create_table('codes',
@@ -58,7 +56,6 @@ def downgrade() -> None:
     op.drop_table('codes')
     with op.batch_alter_table('users', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_users_username'))
-        batch_op.drop_index(batch_op.f('ix_users_email'))
 
     op.drop_table('users')
     # ### end Alembic commands ###

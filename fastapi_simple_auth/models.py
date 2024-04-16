@@ -14,8 +14,8 @@ class User(Base):
     __tablename__ = "users"
 
     uuid = Column(String(36), nullable=False, unique=True, primary_key=True, default=get_uuid)
+    # username may be also email
     username = Column(String, unique=True, index=True)
-    email = Column(String, unique=True, index=True)
     password = Column(String)
     is_active = Column(Boolean, default=True)
     created = Column(DateTime)
@@ -27,7 +27,7 @@ class User(Base):
     codes = relationship("Code", back_populates="user")
 
     def __repr__(self):
-        return f"user #{self.uuid} usename:{self.username} {self.email}"
+        return f"user #{self.uuid} usename:{self.username}"
 
 
 class Code(Base):
@@ -35,8 +35,7 @@ class Code(Base):
 
     id = Column(Integer, nullable=False, unique=True, primary_key=True, autoincrement=True)
 
-    user_id = Column(String(36), ForeignKey("users.uuid"))
-
+    user_id = Column(String(36), ForeignKey("users.uuid"), nullable=True)    
     code = Column(String)
     purpose = Column(String)
     created = Column(DateTime(timezone=True), server_default=func.now())
