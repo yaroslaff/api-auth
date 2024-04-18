@@ -27,7 +27,7 @@ class User(Base):
     codes = relationship("Code", back_populates="user")
 
     def __repr__(self):
-        return f"user #{self.uuid} usename:{self.username}"
+        return f"user {self.uuid} {self.username}"
 
 
 class Code(Base):
@@ -37,6 +37,9 @@ class Code(Base):
 
     user_id = Column(String(36), ForeignKey("users.uuid"), nullable=True)    
     code = Column(String)
+    # argument: email
+    argument = Column(String)
+    # purpose: signup
     purpose = Column(String)
     created = Column(DateTime(timezone=True), server_default=func.now())
     expires = Column(DateTime(timezone=True))

@@ -20,8 +20,10 @@ from .settings import settings
 from .verification import send_verification
 from .templates import template_env
 from .startup import startup
-from .session import get_current_user_session
-from . import views
+from .views import baseviews
+from .views import profile
+from .models import User
+from .pub import logged_in_user
 
 __version__ = '0.0.1'
 
@@ -94,25 +96,3 @@ async def get_current_user_jwt(token: Annotated[str, Depends(oauth2_scheme)]):
     return user
 
 
-
-async def get_current_user(request: Request, db: Session = Depends(get_db)): 
-    if settings.auth_transport == "session":
-        return get_current_user_session(request, db)
-    
-async def get_current_active_user(
-        rq: Request,
-        user: Annotated[views.User, Depends(get_current_user)],
-):
-    
-    if user is None:
-        if settings.notauth_login:
-            raise HTTPException(status_code=302, detail="Not authorized", 
-                            headers = {"Location": str(rq.url_for('login_html'))} )
-        else:
-            raise HTTPException(status_code=403)
-
-
-    return user
-
-
-logged_in_user = Annotated[views.User, Depends(get_current_active_user)]

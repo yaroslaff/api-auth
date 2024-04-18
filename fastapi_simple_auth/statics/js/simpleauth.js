@@ -12,6 +12,23 @@ function redirect_to_login(){
     window.location.replace("login");
 }
 
+function logout_btn_onclick(){
+    fetch('/auth/logout', {
+        method: "POST"
+    })
+    .then(r => {
+        if(r.status == 200){
+            window.location.replace(settings.afterlogout_url);
+        }else{
+            open_modal_close("Something went wrong. Please try again later.")
+        }
+    })
+
+    window.location.replace("login");
+
+}
+
+
 function open_modal(msg, btn_classes = null, btn_title = null, btn_onclick=null){
     modal_p.innerHTML = msg
 
@@ -210,6 +227,24 @@ function reg_btn_onclick(){
     .catch(e => console.log("ERROR", e))
 }
 
+function init_hooks(){
+    var hooks = {
+        'fastapi-simple-auth-register-btn': reg_btn_onclick,
+        'fastapi-simple-auth-login-btn': login_btn_onclick,
+        'fastapi-simple-auth-verify-btn': verify_btn_onclick,
+        'fastapi-simple-auth-verify-send-btn': verify_send_btn_onclick,
+        'fastapi-simple-auth-logout-btn': logout_btn_onclick
+    }
+    for (let el_id in hooks) {
+        var btn = document.getElementById(el_id);
+        if(btn){
+            console.log("hook", el_id, btn)
+            btn.onclick = hooks[el_id]
+        }
+    }
+    
+}
+
 function init_page(){
 
     const closeModalButtons = document.querySelectorAll('.closeModal, .modal-background, .modal-close');
@@ -220,20 +255,7 @@ function init_page(){
         });
     });
 
-    /* register button */
-    var reg_btn = document.getElementById('fastapi-simple-auth-register-btn');
-    if(reg_btn) reg_btn.onclick = reg_btn_onclick;
-
-    var login_btn = document.getElementById('fastapi-simple-auth-login-btn');
-    if(login_btn) login_btn.onclick = login_btn_onclick;
-
-    var verify_btn = document.getElementById('fastapi-simple-auth-verify-btn');
-    if(verify_btn) verify_btn.onclick = verify_btn_onclick;
-
-    var verify_send_btn = document.getElementById('fastapi-simple-auth-verify-send-btn');
-    if(verify_send_btn) verify_send_btn.onclick = verify_send_btn_onclick;
-
-
+    init_hooks();
 }
 
 init_page()

@@ -9,15 +9,15 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 from sqlalchemy.orm import Session
 
-from .router import auth_router
-from .templates import template_env
-from .settings import settings
+from ..router import auth_router
+from ..templates import template_env
+from ..settings import settings
 
-from . import crud, schemas
-from .db import get_db
-from .verification import send_verification, get_code_record
-from .exceptions import SimpleAuthVerificationAlreadySent
-from .cron import cron
+from .. import crud, schemas
+from ..db import get_db
+from ..verification import send_verification, get_code_record
+from ..exceptions import SimpleAuthVerificationAlreadySent
+from ..cron import cron
 
 class Token(BaseModel):
     access_token: str
@@ -35,8 +35,8 @@ class User(BaseModel):
     disabled: bool | None = None
 
 
-class UserInDB(User):
-    hashed_password: str
+#class UNUSED_UserInDB(User):
+#    hashed_password: str
 
 
 @auth_router.get('/settings.js')
@@ -45,7 +45,8 @@ def settings_view(request: Request):
     data = {
         'username_is_email': settings.username_is_email,
         'signin_after_signup': settings.signin_after_signup,
-        'afterlogin_url': settings.afterlogin_url
+        'afterlogin_url': settings.afterlogin_url,
+        'afterlogout_url': settings.afterlogout_url
     }
     
     js_content = f"""
@@ -105,10 +106,9 @@ def email_verify_post(rq: Request, email: str, coderq: schemas.VerificationCode,
             'url': str(rq.url_for('login_get'))
         }
     
-    return success
-
     if not cr:
         return resp_bad
+    
     cron(db)
 
     if cr.code == code:
@@ -117,7 +117,6 @@ def email_verify_post(rq: Request, email: str, coderq: schemas.VerificationCode,
         db.commit()
         return success
     else:
-        print("fail")
         return resp_bad
 
 

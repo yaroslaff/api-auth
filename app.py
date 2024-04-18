@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from fastapi_simple_auth import SimpleAuth, logged_in_user
-from fastapi_simple_auth.views import User
+from fastapi_simple_auth.views.baseviews import User
         
 app = FastAPI()
 
