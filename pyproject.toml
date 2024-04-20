@@ -36,7 +36,9 @@ dependencies = [
   'python-dotenv',
   'jinja2',
   'pydantic-settings',
-  'itsdangerous'
+  'itsdangerous',
+  'typer',
+  'click',
 ]
 
 
@@ -44,6 +46,9 @@ dependencies = [
 Documentation = "https://github.com/yaroslaff/fastapi-simple-auth#readme"
 Issues = "https://github.com/yaroslaff/fastapi-simple-auth/issues"
 Source = "https://github.com/yaroslaff/fastapi-simple-auth"
+
+[project.scripts]
+simpleauth = "fastapi_simple_auth.cli.simpleauth:main"
 
 [tool.hatch.version]
 path = "fastapi_simple_auth/__init__.py"
@@ -172,3 +177,5 @@ exclude_lines = [
   "if __name__ == .__main__.:",
   "if TYPE_CHECKING:",
 ]
+
+
