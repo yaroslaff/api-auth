@@ -8,17 +8,19 @@ const settings = JSON.parse(sessionStorage.getItem("simpleAuthSettings"));
 
 
 
-function redirect_to_login(){
-    window.location.replace("login");
+function redirect(url){
+    console.log(settings.base_url);
+
+    window.location.replace(settings.base_url + url);
 }
 
 function logout_btn_onclick(){
     fetch('/auth/logout', {
-        method: "POST"
+        method: "POST",
     })
     .then(r => {
         if(r.status == 200){
-            window.location.replace(settings.afterlogout_url);
+            open_modal_ok("Please check your inbox now")
         }else{
             open_modal_close("Something went wrong. Please try again later.")
         }
@@ -26,6 +28,49 @@ function logout_btn_onclick(){
 
     window.location.replace("login");
 
+}
+
+function chpass_btn_onclick(){
+    var oldpass = document.getElementById('oldpassword').value;
+    var pass = document.getElementById('newpassword').value;
+    var pass2 = document.getElementById('newpassword2').value;
+
+    if(oldpass == '' || pass == '' || pass2 == ''){
+        open_modal_close("Please fill all the fields.")
+        return    
+    }
+
+    if(pass != pass2){
+        open_modal_close("Passwords do not match.")
+        return
+    }
+
+    const payload = {
+        'old_password': oldpass,
+        'password': pass,
+    }
+
+    fetch('/auth/change_password', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+          },
+        body: JSON.stringify(payload)
+    })
+    .then(r => {
+        console.log(r);
+        console.log(r.status);
+        switch(r.status){
+            case 200:
+                open_modal_ok("password changed");
+                break;
+            case 401:
+                open_modal_close("Incorrect password.");
+                break;
+            default:
+                open_modal_close("Something went wrong. Please try again later.")
+        }
+    })
 }
 
 
@@ -102,8 +147,121 @@ function verify_btn_onclick(){
     })
 }
 
-  function verify_send_btn_onclick(){
-    alert("verify send again");
+function recover_btn_onclick(){
+    const code = document.getElementById('code').value
+    const password = document.getElementById('password').value
+    const password2 = document.getElementById('password2').value
+
+    const segments = window.location.href.split('/');
+    const email = segments[segments.length - 1];
+
+    console.log(email);
+
+    // verify if code, password are valid
+    if(! code || ! password || ! password2){
+        open_modal_close("Please fill all the fields.")
+        return
+    }
+
+    // if passwords match
+    if(password != password2){
+        open_modal_close("Passwords do not match.")
+        return
+    }
+
+    const payload = {
+        'code': code,
+        'password': password
+    }
+
+    fetch('', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+          },
+        body: JSON.stringify(payload)
+    })
+    .then(async r => {
+        console.log(r);
+        console.log(r.status);
+        switch(r.status){
+            case 200:
+                open_modal_ok("Changed password, login now", function() { redirect('/login'); } );
+                break;
+            case 400:
+                open_modal_close(await r.text());
+                break;
+            default:
+                open_modal_close("Something went wrong. Please try again later.")
+        }
+    })
+
+
+}
+
+function send_recover_btn_onclick(){
+
+    const username = document.getElementById('username').value
+
+    if(! username){
+        open_modal_close("Email address not be empty")
+    }
+    if(! validateEmail(username)){
+        open_modal_close("Invalid email address")
+    }
+
+    const payload = {
+        'email': username
+    }
+    fetch('recover', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+          },
+        body: JSON.stringify(payload)
+    })
+    .then(async r => {
+        console.log(r);
+        console.log(r.status);
+        switch(r.status){
+            case 200:
+                open_modal_ok(await r.text());
+                break;
+            case 429:
+                open_modal_close("Code was sent recently, cannot resend now");
+                btn.disabled = true;
+                break;
+            default:
+                open_modal_close("Something went wrong. Please try again later.")
+        }
+    })
+}
+
+function verify_resend_btn_onclick(){
+
+    const segments = window.location.href.split('/');
+    const email = segments[segments.length - 1];
+
+    const btn = document.getElementById("fastapi-simple-auth-verify-resend-btn")
+
+    fetch('/auth/emailverify_resend/' + email, {
+        method: "POST",
+    })
+    .then(async r => {
+        console.log(r);
+        console.log(r.status);
+        switch(r.status){
+            case 200:
+                open_modal_ok(await r.text());
+                break;
+            case 429:
+                open_modal_close("Code was sent recently, cannot resend now");
+                btn.disabled = true;
+                break;
+            default:
+                open_modal_close("Something went wrong. Please try again later.")
+        }
+    })    
   }
 
 
@@ -130,12 +288,6 @@ function verify_btn_onclick(){
     const formData = new FormData();
     formData.append("username", user_el.value);
     formData.append("password", pass_el.value);
-
-
-    const payload = {
-        'username': username,
-        'password': pass1
-    }
 
     /* all checks passed */
     fetch('/auth/login', {
@@ -231,9 +383,12 @@ function init_hooks(){
     var hooks = {
         'fastapi-simple-auth-register-btn': reg_btn_onclick,
         'fastapi-simple-auth-login-btn': login_btn_onclick,
+        'fastapi-simple-auth-logout-btn': logout_btn_onclick,
         'fastapi-simple-auth-verify-btn': verify_btn_onclick,
-        'fastapi-simple-auth-verify-send-btn': verify_send_btn_onclick,
-        'fastapi-simple-auth-logout-btn': logout_btn_onclick
+        'fastapi-simple-auth-verify-resend-btn': verify_resend_btn_onclick,
+        'fastapi-simple-auth-chpass-btn': chpass_btn_onclick,
+        'fastapi-simple-auth-send-recover-btn': send_recover_btn_onclick,
+        'fastapi-simple-auth-recover-btn': recover_btn_onclick,
     }
     for (let el_id in hooks) {
         var btn = document.getElementById(el_id);

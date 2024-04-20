@@ -13,17 +13,16 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from sqlalchemy.orm import Session
 
-from . import schemas, crud
+from . import schemas, crud, views
 from .router import auth_router
 from .db import get_db
 from .settings import settings
-from .verification import send_verification
+from .verification import send_verification_signup
 from .templates import template_env
 from .startup import startup
-from .views import baseviews
-from .views import profile
 from .models import User
 from .pub import logged_in_user
+from . import views
 
 __version__ = '0.0.1'
 

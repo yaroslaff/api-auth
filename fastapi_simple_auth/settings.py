@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     code_size: int = 6
     code_set: str = "digits"
     code_lifetime: int = 86400
-    code_regenerate: int = 0
+    code_regenerate: int = 30
     
     mail_transport: str = "stdout"
     mail_host: str = "127.0.0.1"

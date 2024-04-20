@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import Depends, HTTPException, Request 
 from .settings import settings
-from .views import baseviews
+from . import views
 from sqlalchemy.orm import Session
 from .db import get_db
 from .session import get_current_user_session
@@ -15,19 +15,16 @@ async def get_current_user(request: Request, db: Session = Depends(get_db)):
     
 async def get_current_active_user(
         rq: Request,
-        user: Annotated[baseviews.User, Depends(get_current_user)],
+        user: Annotated[User, Depends(get_current_user)],
 ):
-    
+
     if user is None:
         if settings.notauth_login:
             raise HTTPException(status_code=302, detail="Not authorized", 
-                            headers = {"Location": str(rq.url_for('login_get'))} )
+                            headers = {"Location": str(rq.url_for('get_login'))} )
         else:
             raise HTTPException(status_code=403)
 
     return user
-
-
-
 
 logged_in_user = Annotated[User, Depends(get_current_active_user)]

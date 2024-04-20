@@ -22,7 +22,8 @@ def cron(db: Session = None, force: bool = False):
 
     # delete expired codes
     n = db.query(Code).filter(Code.expires < datetime.datetime.now()).delete()    
-    print("deleted", n)
+    if n:
+        print(f"Cron deleted {n} expired codes")
     db.commit()
 
     if opened_db:
