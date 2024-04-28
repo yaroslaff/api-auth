@@ -39,6 +39,7 @@ class Settings(BaseSettings):
     # authenticate automatically after signup
     signin_after_signup: bool = True
 
+    template_theme: str = "fastapi_simple_auth_basic"
 
     model_config = SettingsConfigDict(env_file=".env", extra='ignore')
 

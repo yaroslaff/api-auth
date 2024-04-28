@@ -55,4 +55,4 @@ class Code(Base):
         return now > self.created + datetime.timedelta(seconds=settings.code_regenerate)
 
     def __repr__(self):
-        return f"code {self.purpose}({self.argument}) {self.code} {self.created}"
+        return f"{self.user} {self.purpose}({self.argument}) {self.code} {self.created}"

@@ -59,8 +59,9 @@ class SimpleAuth():
     def register(self):
         self.app.add_middleware(SessionMiddleware, secret_key='ChangeMe', max_age=None)
         self.app.include_router(auth_router, prefix="/auth")
-        self.app.mount("/static", StaticFiles(packages=['fastapi_simple_auth']), name="static")
-
+        self.app.mount("/auth/static", 
+                       StaticFiles(packages=[settings.template_theme]), 
+                       name="simpleauth-static")
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()

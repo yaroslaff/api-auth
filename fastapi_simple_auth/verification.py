@@ -66,7 +66,7 @@ def send_verification_change_email(rq: Request, db: Session, user: User, email: 
 
 def send_recovery_email(rq: Request, db: Session, user: User):
     email = user.username
-    cr = create_code_record(db=db, user=user, purpose='recover', seconds=settings.code_lifetime, argument=email)
+    cr = create_code_record(db=db, user=user, purpose='recover', seconds=settings.code_lifetime)
     tpl = template_env.get_template('email/recover.html')
     html = tpl.render(rq = rq, code = cr.code, title = settings.app_title, email = email)
     send_mail(email, subject=f"Recover password on {settings.app_title}", html=html)

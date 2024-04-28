@@ -19,7 +19,6 @@ app = typer.Typer(pretty_exceptions_show_locals=False,
 err_console = Console(stderr=True)
 
 
-
 @app.callback(
         context_settings={"help_option_names": ["-h", "--help"]})
 def callback(ctx: typer.Context,
