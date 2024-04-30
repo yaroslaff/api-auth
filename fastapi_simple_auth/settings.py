@@ -22,8 +22,8 @@ class Settings(BaseSettings):
     mail_host: str = "127.0.0.1"
     mail_port: int = 25
     mail_from: str = "NoReply <noreply@example.com>"
-    mail_user: str = None
-    mail_password: str = None
+    mail_user: str | None = None
+    mail_password: str | None = None
     mail_starttls: bool = False
 
     auth_transport: str = "session"
