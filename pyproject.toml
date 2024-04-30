@@ -28,6 +28,7 @@ classifiers = [
 dependencies = [
   'pydantic[email]',
   'fastapi',
+  'fastapi-simple-auth-basic',
   'python-multipart',
   'python-jose[cryptography]',
   'passlib[bcrypt]',
