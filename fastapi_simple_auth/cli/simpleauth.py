@@ -1,11 +1,16 @@
+import os
 import typer
 import click
 from rich.console import Console
 from typing_extensions import Annotated
+from sqlalchemy import create_engine
+import alembic
 
 from ..models import User, Code
 from ..db import SessionLocal
 from ..cron import cron
+from ..settings import settings
+from .. import package_path
 
 err_console = Console(stderr=True)
 
@@ -47,6 +52,23 @@ def codes():
              help='Run cron job once')
 def clicron():
     cron(force=True)
+
+@app.command("dbupgrade", rich_help_panel=panel_local,
+             help='upgrade/create db (alembic upgrade head)')
+def upgrade_head():
+
+    alembic_cfg = alembic.config.Config()
+    alembic_cfg.set_main_option("sqlalchemy.url", settings.db_url)
+    alembic_cfg.set_main_option("script_location", os.path.join(package_path(), "alembic"))
+
+    print("Doing 'upgrade head'...")
+    engine = create_engine(settings.db_url)
+    with engine.connect() as connection:
+        alembic_cfg.attributes['connection'] = connection
+        from alembic import command
+        command.upgrade(alembic_cfg, "head")
+
+
 
 def main():
     global exact

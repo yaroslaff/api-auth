@@ -1,11 +1,13 @@
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
+import os
 import logging
 
 from fastapi import Depends, FastAPI, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
+
 
 from jose import JWTError, jwt
 
@@ -15,7 +17,6 @@ from sqlalchemy.orm import Session
 
 from . import schemas, crud, views
 from .router import auth_router
-from .db import get_db
 from .settings import settings
 from .verification import send_verification_signup
 from .templates import template_env
@@ -39,6 +40,12 @@ logging.getLogger('passlib').setLevel(logging.ERROR)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 # startup(auth_router)
+
+
+def package_path():
+    return os.path.dirname(__file__) # .replace("simpleauth/__init__.py", "")
+
+
 startup()
 
 # api_auth.mount("/static", StaticFiles(directory="static"), name="static")
@@ -96,3 +103,5 @@ async def get_current_user_jwt(token: Annotated[str, Depends(oauth2_scheme)]):
     return user
 
 
+def __main__():
+    print("mmm")
