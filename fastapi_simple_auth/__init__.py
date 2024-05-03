@@ -25,7 +25,7 @@ from .models import User
 from .pub import logged_in_user
 from . import views
 
-__version__ = '0.0.2'
+__version__ = '0.0.3'
 
 # to get a string like this run:
 # openssl rand -hex 32
