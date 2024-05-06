@@ -1,4 +1,4 @@
-# api-auth
+# FastAPI Simple Auth
 
 ## Authentication easy as three lines!
 
