@@ -1,12 +1,19 @@
 from functools import lru_cache
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional
+import string
+import random
+
+
+
+# generate random secret key
+default_secret_key = "".join(random.choices(string.ascii_letters + string.digits, k=50))
 
 class Settings(BaseSettings):
     db_url: str = "sqlite:///./test.db"
 
     app_title: str = "My Noname App"
-    secret_key: str = None
+    secret_key: str = default_secret_key
 
     login_result: str = "session"
     email_verification: bool = False
