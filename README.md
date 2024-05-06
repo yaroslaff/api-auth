@@ -49,7 +49,7 @@ uvicorn app:app
 
 ## Usage
 
-This examples uses httpie because it is very good to craft JSON requests.
+This examples uses [httpie](http://httpie.io/) because it is very good to craft JSON requests.
 
 ~~~
 # register
