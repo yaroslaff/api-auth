@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional
 
 class Settings(BaseSettings):
-    db_url: str = ""
+    db_url: str = "sqlite:///./test.db"
 
     app_title: str = "My Noname App"
     secret_key: str = None
