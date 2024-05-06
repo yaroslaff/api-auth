@@ -4,7 +4,7 @@ import click
 from rich.console import Console
 from typing_extensions import Annotated
 from sqlalchemy import create_engine
-import alembic
+from alembic.config import Config as alembicConfig
 
 from ..models import User, Code
 from ..db import SessionLocal
@@ -57,7 +57,7 @@ def clicron():
              help='upgrade/create db (alembic upgrade head)')
 def upgrade_head():
 
-    alembic_cfg = alembic.config.Config()
+    alembic_cfg = alembicConfig()
     alembic_cfg.set_main_option("sqlalchemy.url", settings.db_url)
     alembic_cfg.set_main_option("script_location", os.path.join(package_path(), "alembic"))
 
