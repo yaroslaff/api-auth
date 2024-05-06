@@ -19,26 +19,37 @@ async def read_users_me(user: logged_in_user) -> str:
     return f"Hello {user.username} {user.uuid}"
 ~~~
 
+![login screenshot](img/login.png)
+
 ## Features
 - Users are stored in any supported SQLAlchemy database
 - Optional email verification
 - User creation
 - Password recovery
+- Profile page with change password, change email
 - Custom UI themes!
 
 
 ## Install
 
 ~~~shell
-cp .env.example .env
-# now edit it
+pip3 install fastapi-simple-auth
+# create/edit .env file
 vim .env
+simpleauth dbupgrade
+~~~
 
-alembic upgrade head
+Write app in app.py
+
+Start:
+~~~
+uvicorn app:app
 ~~~
 
 
 ## Usage
+
+This examples uses httpie because it is very good to craft JSON requests.
 
 ~~~
 # register
