@@ -16,7 +16,9 @@ class Settings(BaseSettings):
     secret_key: str = default_secret_key
 
     login_result: str = "session"
-    email_verification: bool = False
+    
+    # Unused. if username_is_email, verification is enabled
+    # email_verification: bool = False
     
     username_is_email: bool = True
 
