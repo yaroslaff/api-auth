@@ -19,7 +19,7 @@ async def read_users_me(user: logged_in_user) -> str:
     return f"Hello {user.username} {user.uuid}"
 ~~~
 
-![login screenshot](img/login.png)
+![login screenshot](docs/docs/img/login.png)
 
 ## Features
 - Users are stored in any supported SQLAlchemy database
