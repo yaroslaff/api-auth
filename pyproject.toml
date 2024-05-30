@@ -40,6 +40,8 @@ dependencies = [
   'itsdangerous',
   'typer',
   'click',
+  'zxcvbn',
+  'password_strength'
 ]
 
 

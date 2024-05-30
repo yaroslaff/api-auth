@@ -20,3 +20,16 @@ async def read_users_me(user: logged_in_user) -> str:
 ~~~
 
 ![login screenshot](img/login.png)
+
+## Installation
+~~~
+pip3 install fastapi-simple-auth
+~~~
+
+Edit app.py as on example above.
+
+Initialize database with command: `simpleauth dbupgrade`
+
+~~~
+uvicorn app:app
+~~~

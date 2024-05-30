@@ -13,9 +13,4 @@ def startup():
 
     code = generate_code()
 
-    assert(settings.auth_transport in ['session', 'jwt'])
-
-    if settings.auth_transport == "session":
-        # session_startup(app)
-        pass
-
+    assert(settings.transport_session or settings.transport_bearer)

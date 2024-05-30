@@ -42,6 +42,13 @@ def post_login(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+    # what if unverified?
+    if settings.username_is_email and not user.email_verified:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Email not verified",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
     # authenticate
     if settings.auth_transport == "session":

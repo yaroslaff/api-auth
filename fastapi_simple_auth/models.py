@@ -6,9 +6,16 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 
+from passlib.context import CryptContext
+
 from .settings import settings
 
 Base = declarative_base()
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def get_password_hash(password):
+    return pwd_context.hash(password)
 
 def get_uuid():
     return str(uuid.uuid4())
@@ -33,6 +40,14 @@ class User(Base):
     def __repr__(self):
         return f"user {self.uuid} {self.username}"
 
+    def dump(self):
+        return f"username: {self.username}\n" \
+            f"uuid: {self.uuid}\n" \
+            f"verified: {self.email_verified}\n" \
+            f"codes: {' '.join([ c.code for c in self.codes]) }"
+
+    def set_password(self, new_password: str):
+        self.password = get_password_hash(new_password)
 
 class Code(Base):
     __tablename__ = "codes"
