@@ -52,7 +52,7 @@ Recovery and verification codes are generated based on these settings:
 
 
 ## Sending mail
-~~~
+~~~python3
     mail_transport: str = "stdout"
     mail_host: str = "127.0.0.1"
     mail_port: int = 25
@@ -71,8 +71,7 @@ Recovery and verification codes are generated based on these settings:
 ~~~
     afterlogin_url: str = "/"
     afterlogout_url: str = "login"
-    
-    # redirect to login if not authenticated
+    ### redirect to login if not authenticated
     notauth_login: bool = True
 
     # authenticate automatically after signup
