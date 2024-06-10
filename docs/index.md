@@ -30,25 +30,4 @@ async def read_users_me(user: logged_in_user) -> str:
     return f"Hello {user.username} {user.uuid}"
 ~~~
 
-## Install
-
-> **Note**: use virtualenv.
-
-~~~shell
-pip3 install fastapi-simple-auth
-# create/edit .env file
-vim .env
-simpleauth dbupgrade
-~~~
-
-Write app in app.py
-
-Start:
-~~~
-uvicorn app:app
-~~~
-
-## Official Documentation location
-https://fastapi-simple-auth.readthedocs.io/
-
-Source for documentation are in 
+See [[quickstart]] next.
