@@ -34,7 +34,7 @@ async def read_users_me(user: logged_in_user) -> str:
 
 ## Documentation
 
-See [[docs]].
+See in docs/. Will make later :-)
 
 ## Install
 
