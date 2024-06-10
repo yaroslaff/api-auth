@@ -1,5 +1,9 @@
 # FastAPI Simple Auth
 
+[![Documentation Status](https://readthedocs.org/projects/fastapi-simple-auth/badge/?version=latest)](https://fastapi-simple-auth.readthedocs.io/en/latest/?badge=latest)
+
+
+
 - Such a long name! It's hard to type it out.
 - Yes, but everything else in this project is simple.
 
