@@ -22,7 +22,7 @@ async def read_users_me(user: logged_in_user) -> str:
     return f"Hello {user.username} {user.uuid}"
 ~~~
 
-![login screenshot](docs/docs/img/login.png)
+![login screenshot](docs/img/login.png)
 
 ## Features
 - Users are stored in any supported SQLAlchemy database
@@ -32,6 +32,9 @@ async def read_users_me(user: logged_in_user) -> str:
 - Profile page with change password, change email
 - Custom UI themes!
 
+## Documentation
+
+See [[docs]].
 
 ## Install
 
