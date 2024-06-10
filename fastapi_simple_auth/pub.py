@@ -5,14 +5,23 @@ from . import views
 from sqlalchemy.orm import Session
 from .db import get_db
 from .session import get_current_user_session
+from .jwt import get_current_user_bearer
 from .models import User
 # public interface
 
 
 async def get_current_user(request: Request, db: Session = Depends(get_db)): 
-    if settings.auth_transport == "session":
-        return get_current_user_session(request, db)
-    
+    if settings.transport_session:
+        user = get_current_user_session(request, db)
+
+    if user:
+        return user
+
+    if settings.transport_bearer:
+        user = get_current_user_bearer(request, db)
+
+    return user
+
 async def get_current_active_user(
         rq: Request,
         user: Annotated[User, Depends(get_current_user)],

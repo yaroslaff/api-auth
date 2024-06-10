@@ -38,7 +38,7 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.User).offset(skip).limit(limit).all()
 
 def change_password(db: Session, user: models.User, new_password: str):
-    user.password = get_password_hash(new_password)
+    user.set_password(new_password)
     db.commit()
     db.refresh(user)
     return user

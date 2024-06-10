@@ -9,6 +9,7 @@ from ..templates import template_env
 from ..db import get_db
 from ..verification import send_verification_signup
 from ..exceptions import SimpleAuthVerificationAlreadySent
+from ..passtr import PasswordStrengthError, check_password
 
 @auth_router.get('/signup')
 def get_signup(request: Request, response_class=HTMLResponse):
@@ -32,6 +33,13 @@ def create_user(rq: Request, user: schemas.UserCreate, db: Session = Depends(get
 
     if db_user:
         raise HTTPException(status_code=400, detail="User already registered")
+
+
+    try:
+        check_password(user.password)
+    except PasswordStrengthError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 
     user = crud.create_user(db=db, user=user)
     if settings.username_is_email:

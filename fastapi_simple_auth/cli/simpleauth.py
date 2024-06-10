@@ -5,6 +5,7 @@ from rich.console import Console
 from typing_extensions import Annotated
 from sqlalchemy import create_engine
 from alembic.config import Config as alembicConfig
+from uuid import UUID
 
 from ..models import User, Code
 from ..db import SessionLocal
@@ -15,6 +16,19 @@ from .. import package_path
 err_console = Console(stderr=True)
 
 panel_local="Local commands"
+
+def is_uuid(username: str):
+    try:
+        uuid_obj = UUID(username, version=4)
+        return True
+    except ValueError:
+        return False
+
+def get_user(username: str) -> User:
+    if is_uuid(username):
+        return db.query(User).filter(User.uuid == username).first()
+    else:
+        return db.query(User).filter(User.username == username).first()
 
 app = typer.Typer(pretty_exceptions_show_locals=False, 
     # rich_markup_mode="rich"
@@ -41,6 +55,31 @@ def callback(ctx: typer.Context,
 def users():
     for user in db.query(User).all():
         print(user)
+
+
+@app.command(rich_help_panel=panel_local, name="user",
+             help='Show user')
+def user_ops(username: str, 
+        verify: Annotated[bool, typer.Option(help="verify email for user")] = False,
+        password: Annotated[str, typer.Option(help="Set new password")] = None):
+    
+    user = get_user(username)
+
+    if user is None:
+        print("No such user", username)
+        return
+
+    if password:
+        user.set_password(password)
+        db.commit()
+
+    if verify:
+        user.email_verified = True
+        db.commit()
+
+    print(user.dump())
+
+
 
 @app.command(rich_help_panel=panel_local,
              help='List all codes')

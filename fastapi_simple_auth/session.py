@@ -15,3 +15,4 @@ def get_current_user_session(request: Request, db: Session):
     
     user = get_user_by_uuid(db, uuid)
     return user
+

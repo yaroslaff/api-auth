@@ -26,6 +26,9 @@ class Settings(BaseSettings):
     code_set: str = "digits"
     code_lifetime: int = 86400
     code_regenerate: int = 30
+
+    access_token_expire: int = 0
+    refresh_token_expire: int = 0
     
     mail_transport: str = "stdout"
     mail_host: str = "127.0.0.1"
@@ -35,7 +38,8 @@ class Settings(BaseSettings):
     mail_password: str | None = None
     mail_starttls: bool = False
 
-    auth_transport: str = "session"
+    transport_bearer: bool = True
+    transport_session: bool = True
 
     cron_interval: int = 300
 
@@ -47,6 +51,9 @@ class Settings(BaseSettings):
 
     # authenticate automatically after signup
     signin_after_signup: bool = True
+
+    password_zxcvbn: int | None = None 
+    password_strength_policy: str | None = None
 
     template_theme: str = "fastapi_simple_auth_basic"
 
