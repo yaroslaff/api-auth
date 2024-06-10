@@ -10,7 +10,7 @@ from ..pub import logged_in_user
 from ..crud import verify_password, get_password_hash, change_password
 from ..db import get_db
 from ..verification import send_verification_change_email
-from ..passwordstrenght import PasswordStrengthError, check_password
+from ..passwordstrength import PasswordStrengthError, check_password
 
 
 @auth_router.get('/profile')
