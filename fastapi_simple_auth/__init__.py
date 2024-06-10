@@ -25,7 +25,7 @@ from .models import User
 from .pub import logged_in_user
 from . import views
 
-__version__ = '0.0.7'
+__version__ = '0.0.8'
 
 # suppress AttributeError: module 'bcrypt' has no attribute '__about__'
 logging.getLogger('passlib').setLevel(logging.ERROR)

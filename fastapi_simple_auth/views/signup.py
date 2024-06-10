@@ -9,7 +9,7 @@ from ..templates import template_env
 from ..db import get_db
 from ..verification import send_verification_signup
 from ..exceptions import SimpleAuthVerificationAlreadySent
-from ..passtr import PasswordStrengthError, check_password
+from ..passwordstrength import PasswordStrengthError, check_password
 
 @auth_router.get('/signup')
 def get_signup(request: Request, response_class=HTMLResponse):
