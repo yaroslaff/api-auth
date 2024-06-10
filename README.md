@@ -34,7 +34,7 @@ async def read_users_me(user: logged_in_user) -> str:
 
 ## Documentation
 
-See in docs/. Will make later :-)
+https://fastapi-simple-auth.readthedocs.io/
 
 ## Install
 

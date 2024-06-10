@@ -1,17 +1,54 @@
-# Welcome to MkDocs
+# FastAPI-Simple-Atuh
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+## Simple authentication for FastAPI
 
-## Commands
+Install in two commands, add authentication in three lines, configure to taste.
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+[FastAPI-Simple-Auth git repository](https://github.com/yaroslaff/fastapi-simple-auth)
+[FastAPI-Simple-Auth documentation](https://fastapi-simple-auth.readthedocs.io/)
 
-## Project layout
+## Features
+- Users are stored in any supported SQLAlchemy database (sqlite3, mysql, ...)
+- Optional email verification
+- User creation
+- Password recovery
+- Profile page with change password, change email
+- Custom UI themes!
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+
+## Example protected app
+~~~python
+from fastapi import FastAPI
+from fastapi_simple_auth import SimpleAuth, logged_in_user
+        
+app = FastAPI()
+
+simpleauth = SimpleAuth(app)
+
+@app.get("/")
+async def read_users_me(user: logged_in_user) -> str:    
+    return f"Hello {user.username} {user.uuid}"
+~~~
+
+## Install
+
+> **Note**: use virtualenv.
+
+~~~shell
+pip3 install fastapi-simple-auth
+# create/edit .env file
+vim .env
+simpleauth dbupgrade
+~~~
+
+Write app in app.py
+
+Start:
+~~~
+uvicorn app:app
+~~~
+
+## Official Documentation location
+https://fastapi-simple-auth.readthedocs.io/
+
+Source for documentation are in 
