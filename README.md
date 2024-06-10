@@ -1,5 +1,8 @@
 # FastAPI Simple Auth
 
+- Such a long name! It's hard to type it out.
+- Yes, but everything else in this project is simple.
+
 ## Authentication easy as three lines!
 
 1. Import package
