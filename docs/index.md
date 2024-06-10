@@ -4,8 +4,11 @@
 
 Install in two commands, add authentication in three lines, configure to taste.
 
-[FastAPI-Simple-Auth git repository](https://github.com/yaroslaff/fastapi-simple-auth)
-[FastAPI-Simple-Auth documentation](https://fastapi-simple-auth.readthedocs.io/)
+## Links
+- [FastAPI-Simple-Auth git repository](https://github.com/yaroslaff/fastapi-simple-auth)
+- [FastAPI-Simple-Auth documentation](https://fastapi-simple-auth.readthedocs.io/)
+- [Basic theme for FastAPI-Simple-Auth](https://github.com/yaroslaff/fastapi-simple-auth-basic)
+- [Dark theme for FastAPI-Simple-Auth](https://github.com/yaroslaff/fastapi-simple-auth-dark)
 
 ## Features
 - Users are stored in any supported SQLAlchemy database (sqlite3, mysql, ...)
@@ -30,4 +33,4 @@ async def read_users_me(user: logged_in_user) -> str:
     return f"Hello {user.username} {user.uuid}"
 ~~~
 
-See [[quickstart]] next.
+See [Quickstart](quickstart) next.
