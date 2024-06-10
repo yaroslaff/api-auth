@@ -29,12 +29,16 @@ async def read_users_me(user: logged_in_user) -> str:
 ![login screenshot](docs/img/login.png)
 
 ## Features
-- Users are stored in any supported SQLAlchemy database
+- Users are stored in any supported SQLAlchemy database (sqlite3, mysql, ...)
 - Optional email verification
 - User creation
 - Password recovery
+- Flexible password strength requirements
 - Profile page with change password, change email
+- Easy to configure via environment / .env
 - Custom UI themes!
+
+
 
 ## Documentation
 
