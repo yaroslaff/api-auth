@@ -4,10 +4,10 @@ Configuration settings are defined in settings.py and should be configured eithe
 or using .env file
 
 ## Application
-### APP_TITLE
+### `APP_TITLE`
 title of application, default: "My Noname App"
 
-### SECRET_KEY
+### `SECRET_KEY`
 random secret key. generate it with python:
 ~~~
 "".join(random.choices(string.ascii_letters + string.digits, k=50))
@@ -20,25 +20,25 @@ or from this shell one-lines:
 
 
 ## Database
-### DB_URL
+### `DB_URL`
 Address of database, default: `sqlite:///./test.db`
 
 ## Authentication
 
-### AUTH_TRANSPORT (TODO: UNUSED)
+### `AUTH_TRANSPORT` (TODO: UNUSED)
 default: "session"
 
 Where we hold successful authentication
 
-### USERNAME_IS_EMAIL
+### `USERNAME_IS_EMAIL`
 If `True`, all usernames must be email addresses (e.g. batman2000@hotmail.com) and will be verified.
 If `False`, usernames are just strings (e.g. batman2000) and not verified
 
 
-### TRANSPORT_SESSION
+### `TRANSPORT_SESSION`
 Boolean, If `True`, session transport is enabled. (authentication is held in session)
 
-### TRANSPORT_BEARER
+### `TRANSPORT_BEARER`
 Boolean, If `True`, JWT bearer token transport is enabled.
 
 ## Code generation
@@ -85,10 +85,10 @@ Name of template theme package. Default: `fastapi_simple_auth_basic`
 
 ## Password requirements
 
-#### PASSWORD_ZXCVBN
+### `PASSWORD_ZXCVBN`
 [ZXCVBN](https://github.com/dwolfhub/zxcvbn-python) minimal password score (integer, from 0 to 4).
 
-### PASSWORD_STRENGTH_POLICY
+### `PASSWORD_STRENGTH_POLICY`
 Space-separated key=value list for [py-password-strength](https://github.com/kolypto/py-password-strength), example: `length=8 uppercase=1 numbers=1 special=1 nonletters=3 entropybits=20 strength=0.66`
 
 
