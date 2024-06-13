@@ -25,7 +25,7 @@ Address of database, default: `sqlite:///./test.db`
 
 ## Authentication
 
-### AUTH_TRANSPORT
+### AUTH_TRANSPORT (TODO: UNUSED)
 default: "session"
 
 Where we hold successful authentication
@@ -79,12 +79,13 @@ Recovery and verification codes are generated based on these settings:
 ~~~
 
 ## Themes
-### TEMPLATE_THEME 
-Name of template theme package. Default: fastapi_simple_auth_basic
+### `TEMPLATE_THEME`
+Name of template theme package. Default: `fastapi_simple_auth_basic`
+
 
 ## Password requirements
 
-### PASSWORD_ZXCVBN
+#### PASSWORD_ZXCVBN
 [ZXCVBN](https://github.com/dwolfhub/zxcvbn-python) minimal password score (integer, from 0 to 4).
 
 ### PASSWORD_STRENGTH_POLICY

@@ -2,5 +2,5 @@ site_name: FastAPI Simple Auth documentation
 theme: windmill
 nav:
   - Home: index.md
-  - "Configurtion": config.md
+  - "Configuration": config.md
   - "API testing": apitest.md
