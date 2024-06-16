@@ -18,7 +18,8 @@ def settings_view(rq: Request):
         'username_is_email': settings.username_is_email,
         'signin_after_signup': settings.signin_after_signup,
         'afterlogin_url': settings.afterlogin_url,
-        'afterlogout_url': settings.afterlogout_url
+        'afterlogout_url': settings.afterlogout_url,
+        'turnstile_sitekey': settings.turnstile_sitekey,
     }
     
     js_content = f"""

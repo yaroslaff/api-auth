@@ -8,8 +8,9 @@ from ..router import auth_router
 from ..templates import template_env
 from ..db import get_db
 from ..verification import send_verification_signup
-from ..exceptions import SimpleAuthVerificationAlreadySent
+from ..exceptions import SimpleAuthVerificationAlreadySent, SimpleAuthCaptchaFailed
 from ..passwordstrength import PasswordStrengthError, check_password
+from ..captcha import verify_captcha
 
 @auth_router.get('/signup')
 def get_signup(request: Request, response_class=HTMLResponse):
@@ -29,6 +30,12 @@ def get_signup(request: Request, response_class=HTMLResponse):
 @auth_router.post("/users/") # , response_model=schemas.User)
 def create_user(rq: Request, user: schemas.UserCreate, db: Session = Depends(get_db)):
     
+    print("CREATE USER", user)
+    try:
+        verify_captcha(rq=rq, token=user.captcha_token)
+    except SimpleAuthCaptchaFailed as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
     db_user = crud.get_user_by_username(db, username=user.username)
 
     if db_user:

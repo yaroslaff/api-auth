@@ -57,6 +57,11 @@ class Settings(BaseSettings):
 
     template_theme: str = "fastapi_simple_auth_basic"
 
+
+    # captchas
+    turnstile_sitekey: Optional[str] = None
+    turnstile_secret: Optional[str] = None
+
     model_config = SettingsConfigDict(env_file=".env", extra='ignore')
 
 settings = Settings()

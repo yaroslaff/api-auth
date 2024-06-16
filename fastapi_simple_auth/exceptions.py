@@ -3,3 +3,6 @@ class SimpleAuthException(Exception):
 
 class SimpleAuthVerificationAlreadySent(SimpleAuthException):
     pass
+
+class SimpleAuthCaptchaFailed(SimpleAuthException):
+    pass

@@ -27,6 +27,7 @@ classifiers = [
 
 dependencies = [
   'pydantic[email]',
+  'requests',
   'fastapi',
   'fastapi-simple-auth-basic',
   'python-multipart',
