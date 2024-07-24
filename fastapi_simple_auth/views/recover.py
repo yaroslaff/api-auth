@@ -28,7 +28,7 @@ def get_recover(rq: Request, db: Session = Depends(get_db)):
 
 class RecoverRq(BaseModel):
     email: EmailStr
-    captcha_token: str
+    captcha_token: str | None
 
 @auth_router.post('/recover')
 def post_recover(rq: Request, recoverrq: RecoverRq, db: Session = Depends(get_db)):
