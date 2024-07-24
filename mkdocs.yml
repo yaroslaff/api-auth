@@ -3,4 +3,5 @@ theme: windmill
 nav:
   - Home: index.md
   - "Configuration": config.md
+  - "Endpoints": endpoints.md
   - "API testing": apitest.md

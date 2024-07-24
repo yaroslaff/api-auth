@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Request, Response, Depends
 from fastapi.responses import HTMLResponse
+from fastapi.exceptions import HTTPException
 
 from sqlalchemy.orm import Session
 from pydantic import EmailStr, BaseModel
@@ -11,6 +12,8 @@ from ..settings import settings
 from ..templates import template_env
 from ..verification import get_code_record, send_recovery_email
 from ..cron import cron
+from ..captcha import verify_captcha
+from ..exceptions import SimpleAuthCaptchaFailed
 
 @auth_router.get('/recover')
 def get_recover(rq: Request, db: Session = Depends(get_db)):
@@ -25,10 +28,17 @@ def get_recover(rq: Request, db: Session = Depends(get_db)):
 
 class RecoverRq(BaseModel):
     email: EmailStr
+    captcha_token: str
 
 @auth_router.post('/recover')
 def post_recover(rq: Request, recoverrq: RecoverRq, db: Session = Depends(get_db)):
-    
+
+
+    try:
+        verify_captcha(rq=rq, token=recoverrq.captcha_token)
+    except SimpleAuthCaptchaFailed as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
     # always same response to avoid username enumeration
     r = Response("If such user exists, we sent recovery email. Please check your inbox.")
 
@@ -60,11 +70,21 @@ def get_recover_code(rq: Request, email:EmailStr, code: str = "", db: Session = 
 class RecoverSetPassRq(BaseModel):
     code: str
     password: str
+    captcha_token: str
 
 @auth_router.post('/recover/{email}')
 def post_recover_code(rq: Request, email:EmailStr, setpassrq: RecoverSetPassRq, db: Session = Depends(get_db)):
+
+
+    try:
+        verify_captcha(rq=rq, token=setpassrq.captcha_token)
+    except SimpleAuthCaptchaFailed as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
     user = crud.get_user_by_username(db=db, username=email)    
     code = get_code_record(db=db, user=user, code=setpassrq.code)
+
+
 
     resp_bad = Response(status_code=400, content="Invalid code")
 

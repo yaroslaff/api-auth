@@ -18,8 +18,7 @@ def verify_turnstile_captcha(remote_ip: str, token: str):
     if r.status_code == 200 and rj['success'] == True:
         return 
     
-    if r.json()['success'] == False:
-        print("CAPTCHA VERIFICATION:", rj)
+    if r.json()['success'] == False:        
         if 'missing-input-response' in rj['error-codes']:
             raise SimpleAuthCaptchaFailed("Empty captcha")
     

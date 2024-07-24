@@ -21,5 +21,10 @@ class UNUSED_User(UserBase):
     class Config:
         from_attributes=True
 
+class CaptchaOnlyRq(BaseModel):
+    captcha_token: str
+
 class VerificationCode(BaseModel):
     code: str
+    captcha_token: Optional[str] = None
+    

@@ -3,7 +3,8 @@ from typing import Annotated
 from fastapi import Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Form
+from pydantic import BaseModel
 
 from sqlalchemy.orm import Session
 
@@ -11,7 +12,13 @@ from ..db import get_db
 from ..router import auth_router
 from ..templates import template_env
 from ..settings import settings
+from ..captcha import verify_captcha
+from ..exceptions import SimpleAuthCaptchaFailed
 from .. import crud
+
+class Captcha(BaseModel):    
+    captcha_token: str
+
 
 @auth_router.get('/login')
 def get_login(request: Request, response_class=HTMLResponse):
@@ -31,7 +38,17 @@ def get_login(request: Request, response_class=HTMLResponse):
 def post_login(
             rq: Request, 
             form: Annotated[OAuth2PasswordRequestForm, Depends()],
+            captcha_token: Annotated[str, Form()],
             db: Session = Depends(get_db)):
+
+    try:
+        verify_captcha(rq, token=captcha_token)
+    except SimpleAuthCaptchaFailed as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(e),
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
     # here is POST
     user = crud.get_auth_user(db, form.username, form.password)
@@ -50,9 +67,9 @@ def post_login(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    # authenticate
-    if settings.auth_transport == "session":
-        rq.session['user'] = user.uuid        
+    # authenticate ZZZZZZZZZ !!!!
+    # if settings.auth_transport == "session":
+    rq.session['user'] = user.uuid        
 
     return {
         'status': 'OK',

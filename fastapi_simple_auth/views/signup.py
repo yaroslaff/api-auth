@@ -30,7 +30,7 @@ def get_signup(request: Request, response_class=HTMLResponse):
 @auth_router.post("/users/") # , response_model=schemas.User)
 def create_user(rq: Request, user: schemas.UserCreate, db: Session = Depends(get_db)):
     
-    print("CREATE USER", user)
+    
     try:
         verify_captcha(rq=rq, token=user.captcha_token)
     except SimpleAuthCaptchaFailed as e:
@@ -40,7 +40,6 @@ def create_user(rq: Request, user: schemas.UserCreate, db: Session = Depends(get
 
     if db_user:
         raise HTTPException(status_code=400, detail="User already registered")
-
 
     try:
         check_password(user.password)

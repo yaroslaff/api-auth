@@ -1,8 +1,8 @@
 import datetime
 
-from pydantic import EmailStr
+from pydantic import EmailStr, BaseModel
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Request, Response, HTTPException
 from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 
@@ -12,7 +12,9 @@ from ..db import get_db
 from ..templates import template_env
 from ..settings import settings
 from ..verification import get_code_record, resend_verification
+from ..captcha import verify_captcha, SimpleAuthCaptchaFailed
 from ..cron import cron
+from ..schemas import CaptchaOnlyRq
 
 
 @auth_router.get('/emailverify/{email}')
@@ -63,7 +65,15 @@ def get_email_verify(rq: Request, email: EmailStr, code: str = "", db: Session =
 def email_verify_post(rq: Request, email: EmailStr, coderq: schemas.VerificationCode, db: Session = Depends(get_db)):
     
     resp_bad = Response(status_code=400, content="Bad code")
-    
+
+    try:
+        verify_captcha(rq=rq, token=coderq.captcha_token)
+    except SimpleAuthCaptchaFailed as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+
+
     user = crud.get_user_by_username(db=db, username=email)    
     code = get_code_record(db=db, user=user, code=coderq.code)
 
@@ -90,8 +100,16 @@ def email_verify_post(rq: Request, email: EmailStr, coderq: schemas.Verification
     db.commit()
     return success
 
+
 @auth_router.post('/emailverify_resend/{email}')
-def email_verify_resend(rq: Request, email: EmailStr, db: Session = Depends(get_db)):
+def email_verify_resend(rq: Request, email: EmailStr, captcha_rq: CaptchaOnlyRq, db: Session = Depends(get_db)):
+
+    try:
+        verify_captcha(rq=rq, token=captcha_rq.captcha_token)
+    except SimpleAuthCaptchaFailed as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
     user = crud.get_user_by_username(db=db, username=email)    
     code = get_code_record(db=db, user=user)
 
