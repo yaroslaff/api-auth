@@ -91,5 +91,12 @@ Name of template theme package. Default: `fastapi_simple_auth_basic`
 ### `PASSWORD_STRENGTH_POLICY`
 Space-separated key=value list for [py-password-strength](https://github.com/kolypto/py-password-strength), example: `length=8 uppercase=1 numbers=1 special=1 nonletters=3 entropybits=20 strength=0.66`
 
+## Captcha
+
+### TURNSTILE_SITEKEY
+Sitekey from Cloudflare Turnstile captcha
+
+### TURNSTILE_SECRET
+Secret from Cloudflare Turnstile captcha
 
 
