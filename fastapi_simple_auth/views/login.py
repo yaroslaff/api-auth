@@ -78,7 +78,6 @@ def post_login(
 
 @auth_router.post('/logout')
 def logout(rq: Request):
-    if settings.auth_transport == "session":
-        del rq.session['user']
+    del rq.session['user']
     return RedirectResponse(settings.afterlogout_url)
 
