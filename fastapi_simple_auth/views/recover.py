@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, Response, Depends
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse
 from fastapi.exceptions import HTTPException
 
 from sqlalchemy.orm import Session
@@ -33,14 +33,19 @@ class RecoverRq(BaseModel):
 @auth_router.post('/recover')
 def post_recover(rq: Request, recoverrq: RecoverRq, db: Session = Depends(get_db)):
 
-
     try:
         verify_captcha(rq=rq, token=recoverrq.captcha_token)
     except SimpleAuthCaptchaFailed as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+    r = {
+        'email': recoverrq.email,
+        'redirect': rq.url_for('get_recover_code', email=recoverrq.email).path,
+        'msg': "If such user exists, we sent recovery email. Please check your inbox.",
+    }
+
     # always same response to avoid username enumeration
-    r = Response("If such user exists, we sent recovery email. Please check your inbox.")
+    # r = Response(rdata)
 
     email = recoverrq.email
     user = crud.get_user_by_username(db=db, username=email)
@@ -84,12 +89,8 @@ def post_recover_code(rq: Request, email:EmailStr, setpassrq: RecoverSetPassRq, 
     user = crud.get_user_by_username(db=db, username=email)    
     code = get_code_record(db=db, user=user, code=setpassrq.code)
 
-
-
-    resp_bad = Response(status_code=400, content="Invalid code")
-
     if not code:
-        return resp_bad
+        raise HTTPException(status_code=400, detail="Invalid code")
     
     cron(db)
     crud.change_password(db=db, user=user, new_password=setpassrq.password)
